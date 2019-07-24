@@ -1,0 +1,134 @@
+AWSTemplateFormatVersion: 2010-09-09
+Parameters:
+  CFBucketName:
+    Type: String
+    Description: cf-storage name.
+    Default:  cf-storage
+
+  CFBucketURL:
+    Type: String
+    Description: cf-storage url.
+    Default: s3.us-east-2.amazonaws.com/
+
+  BucketTemplateKey: 
+    Type: String
+    Description: BucketName
+    Default: s3Bucket.yml  
+
+  TaskBucketName: 
+    Type: String
+    Description: BucketName
+    Default: input-bucket-for-task
+  
+  LambdaRoleTemplateKey: 
+    Type: String
+    Description: Lambda Role for Lambda Functions template
+    Default: lambda-role.yml
+
+  LambdaLayerKey:
+    Type: String
+    Description: Lambda function read csv and convert to json, template
+    Default: lambda-layer-csv.yml
+  
+  LayerName:
+    Type: String
+    Description: Layer for lambda function.
+    Default: csvtojson-layer
+    
+  LayerS3BucketKey:
+    Type: String
+    Description: Key, layer name.
+    Default: csvtojson-layer
+
+  LambdaFunctionKey:
+    Description: lambda function template
+    Type: String
+    Default: lambda-function.yml
+  
+  LambdaS3PermissionKey:
+    Description: lambda permission to s3 bucket template
+    Type: String
+    Default: lambda-permission-s3.yml
+
+Resources:
+  InputBucket:
+    Type: AWS::CloudFormation::Stack
+    DependsOn:
+    - LambdaPermissionForCSVTOJSON
+    Properties:
+      TemplateURL: !Sub 'https://${CFBucketName}.${CFBucketURL}${BucketTemplateKey}'
+      Parameters:
+          BucketName: !Ref TaskBucketName
+          CsvToJsonArn: !GetAtt LambdaFunctionCSVTOJSON.Outputs.Arn
+          JsonToDictionaryArn: !GetAtt LambdaFunctionJSONTODICTIONARY.Outputs.Arn
+   
+  LambdaRole:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Sub 'https://${CFBucketName}.${CFBucketURL}${LambdaRoleTemplateKey}'
+      Parameters:
+        LambdaBucket: !Ref TaskBucketName
+  
+  LambdaLayerCSVTOJSON:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Sub 'https://${CFBucketName}.${CFBucketURL}${LambdaLayerKey}'
+      Parameters:
+          Name: !Ref LayerName
+          S3Bucket: !Ref CFBucketName
+          S3Key: !Ref LayerS3BucketKey
+  
+  LambdaFunctionCSVTOJSON:
+    Type: AWS::CloudFormation::Stack
+    DependsOn:
+    - LambdaRole
+    - LambdaLayerCSVTOJSON
+    Properties:
+      TemplateURL: !Sub 'https://${CFBucketName}.${CFBucketURL}${LambdaFunctionKey}'
+      Parameters:
+        DeployBucket: !Ref CFBucketName
+        FunctionName: csvtojson_function
+        LayerArn: !GetAtt LambdaLayerCSVTOJSON.Outputs.Arn
+        OutBucket: !Ref TaskBucketName
+        RoleArn: !GetAtt LambdaRole.Outputs.Arn
+
+  LambdaPermissionForCSVTOJSON:
+    Type: AWS::CloudFormation::Stack
+    DependsOn:
+    - LambdaFunctionCSVTOJSON
+    Properties:
+      TemplateURL: !Sub 'https://${CFBucketName}.${CFBucketURL}${LambdaS3PermissionKey}'
+      Parameters:
+        LambdaFunction: !GetAtt LambdaFunctionCSVTOJSON.Outputs.Arn 
+        S3BucketName: !Ref TaskBucketName
+
+  LambdaFunctionJSONTODICTIONARY:
+    Type: AWS::CloudFormation::Stack
+    DependsOn:
+    - LambdaRole
+    Properties:
+      TemplateURL: !Sub 'https://${CFBucketName}.${CFBucketURL}${LambdaFunctionKey}'
+      Parameters:
+        DeployBucket: !Ref CFBucketName
+        FunctionName: jsontodictionary_function
+        OutBucket: !Ref TaskBucketName
+        RoleArn: !GetAtt LambdaRole.Outputs.Arn
+  
+  LambdaPermissionForJSONTODICTIONARY:
+    Type: AWS::CloudFormation::Stack
+    DependsOn:
+    - LambdaFunctionJSONTODICTIONARY
+    Properties:
+      TemplateURL: !Sub 'https://${CFBucketName}.${CFBucketURL}${LambdaS3PermissionKey}'
+      Parameters:
+        LambdaFunction: !GetAtt LambdaFunctionJSONTODICTIONARY.Outputs.Arn 
+        S3BucketName: !Ref TaskBucketName
+
+Outputs:
+  Bucket:
+    Description: Bucket
+    Value: !GetAtt InputBucket.Outputs.Arn
+  
+  csvFunction:
+    Description: Bucket
+    Value: !GetAtt LambdaFunctionCSVTOJSON.Outputs.Arn

@@ -1,0 +1,10 @@
+{
+    "Version": "2012-10-17",
+    "Statement": {
+        "Effect": "Allow",
+        "Principal": {
+            "AWS": "arn:aws:iam::343413928436:user/adrian.flda@gmail.com"
+        },
+        "Action": "sts:AssumeRole"
+    }
+}

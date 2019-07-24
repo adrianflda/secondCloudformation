@@ -1,0 +1,42 @@
+AWSTemplateFormatVersion: 2010-09-09
+Parameters:
+  LambdaBucket:
+    Description: Role for lambda execution permission
+    Type: String
+    Default: input-bucket-for-task
+
+Resources:
+  LambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: LambdaExecutionRole
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Policies:
+        - PolicyName: LambdaExecAndS3GetPut
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:*
+                Resource: arn:aws:logs:*:*:*
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:PutObject
+                Resource:
+                  - !Sub 'arn:aws:s3:::${LambdaBucket}'
+                  - !Sub 'arn:aws:s3:::${LambdaBucket}/*'
+Outputs:
+  Arn:
+    Description: Role for lambda function
+    Value: !GetAtt LambdaExecutionRole.Arn
+      

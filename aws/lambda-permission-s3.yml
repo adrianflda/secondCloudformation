@@ -1,0 +1,19 @@
+AWSTemplateFormatVersion: 2010-09-09
+Parameters:
+  LambdaFunction:
+    Description: lambda function's arn
+    Type: String
+  
+  S3BucketName:
+    Type: String
+    Description: S3 Bukcet Name
+
+Resources:
+  LambdaInvokePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref LambdaFunction
+      Action: 'lambda:InvokeFunction'
+      Principal: s3.amazonaws.com
+      SourceAccount: !Ref 'AWS::AccountId'
+      SourceArn: !Sub 'arn:aws:s3:::${S3BucketName}'

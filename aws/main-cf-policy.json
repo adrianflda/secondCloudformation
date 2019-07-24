@@ -1,0 +1,41 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "CloudformationMainRoleList",
+            "Effect": "Allow",
+            "Action": [
+                "cloudformation:ListStackSetOperationResults",
+                "cloudformation:ListStackSets",
+                "cloudformation:ListStackSetOperations",
+                "cloudformation:ListStackInstances",
+                "cloudformation:ListChangeSets",
+                "cloudformation:DescribeStacks",
+                "cloudformation:ListStackResources"
+            ],
+            "Resource": [
+                "arn:aws:cloudformation:us-east-2:343413928436:stackset/*:*",
+                "arn:aws:cloudformation:us-east-2:343413928436:stack/*/*"
+            ]
+        },
+        {
+            "Sid": "CloudformationMainRoleListAll",
+            "Effect": "Allow",
+            "Action": [
+                "cloudformation:ListExports",
+                "cloudformation:ListStacks",
+                "cloudformation:ListImports"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Sid": "CloudformationMainRoleAll",
+            "Effect": "Allow",
+            "Action": "cloudformation:*",
+            "Resource": [
+                "arn:aws:cloudformation:us-east-2:343413928436:stackset/*:*",
+                "arn:aws:cloudformation:us-east-2:343413928436:stack/*/*"
+            ]
+        }
+    ]
+}

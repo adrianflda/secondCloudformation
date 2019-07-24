@@ -1,0 +1,51 @@
+AWSTemplateFormatVersion: 2010-09-09
+Parameters:
+  DeployBucket:
+    Description: Bucket's name for deployment
+    Type: String
+    Default: cf-storage
+
+  FunctionName:
+    Description: Function's name.
+    Type: String
+    Default: csvtojson_function
+  
+  LayerArn:
+    Description: layer arn
+    Type: String
+    Default: default
+    
+  OutBucket:
+    Type: String
+    Description: Name of the out bucket.
+    Default: input-bucket-for-task
+
+  RoleArn:
+    Type: String
+    Description: Role's arn for lambda function.
+
+Conditions:
+  BadLayer: !Equals [ !Ref LayerArn, "default" ]
+
+Resources:
+  LambdaFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      Description: Lambda function
+      Code: 
+        S3Bucket: !Ref DeployBucket
+        S3Key: !Sub '${FunctionName}.zip'
+      Handler: !Sub 'index.${FunctionName}'
+      Layers: !If [ BadLayer, !Ref "AWS::NoValue" , [ !Ref LayerArn ] ] 
+      Role: !Ref RoleArn
+      Runtime: nodejs8.10
+      ReservedConcurrentExecutions: 2
+      MemorySize: 128
+      Environment:
+        Variables:
+          OutPutBucket: !Ref OutBucket
+
+Outputs:
+  Arn:
+    Description: lambda function's arn
+    Value: !GetAtt LambdaFunction.Arn

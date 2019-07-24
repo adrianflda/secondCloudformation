@@ -1,0 +1,1 @@
+aws cloudformation create-stack --stack-name mainstack --template-url https://cf-storage.s3.amazonaws.com/mainStack.yml --profile main --capabilities CAPABILITY_NAMED_IAM

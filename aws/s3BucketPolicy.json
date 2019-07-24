@@ -1,0 +1,21 @@
+{
+    "Version":"2012-10-17",
+    "Statement": [
+        {
+            "Effect":"Allow",
+	        "Principal": {
+                "AWS": "arn:aws:iam::343413928436:user/adrian.flda@gmail.com"
+            },
+	        "Action":["s3:*"],
+            "Resource": ["arn:aws:s3:::cf-storage/*"]
+        },
+        {
+            "Effect":"Allow",
+	        "Principal": {
+                "Service": "cloudformation.amazonaws.com"
+            },
+	        "Action":["s3:*"],
+            "Resource": ["arn:aws:s3:::cf-storage/*"]
+        }
+    ]
+}

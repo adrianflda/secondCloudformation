@@ -1,0 +1,52 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Parameters:
+  BucketName:
+    Type: String
+    Description: Bucket's name
+    Default: input-bucket-for-task
+
+  CsvToJsonArn:
+    Type: String
+    Description: function arn for csv to json
+  
+  JsonToDictionaryArn:
+    Type: String
+    Description: function arb for json to dictionary
+
+Resources:
+  MyS3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Ref BucketName
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      NotificationConfiguration:
+        LambdaConfigurations:
+          - 
+            Event: 's3:ObjectCreated:*'
+            Function: !Ref CsvToJsonArn
+            Filter:
+              S3Key:
+                Rules:
+                  - Name: prefix
+                    Value: csv/
+                  - Name: suffix
+                    Value: .csv
+          - 
+            Event: 's3:ObjectCreated:*'
+            Function: !Ref JsonToDictionaryArn
+            Filter:
+              S3Key:
+                Rules:
+                  - Name: prefix
+                    Value: json/
+                  - Name: suffix
+                    Value: .json
+
+Outputs:
+  Arn:
+    Description: Output Description
+    Value: !GetAtt MyS3Bucket.Arn

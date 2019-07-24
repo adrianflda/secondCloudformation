@@ -1,0 +1,15 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "KMS",
+            "Effect": "Allow",
+            "Action": [
+                "kms:CreatePolicy"
+            ],
+            "Resource": [
+                "arn:aws:kms::343413928436:role/*"
+            ]
+        }
+    ]
+}

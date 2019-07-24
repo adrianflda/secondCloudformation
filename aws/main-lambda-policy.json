@@ -1,0 +1,34 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "MainRoleLambdaGeneral",
+            "Effect": "Allow",
+            "Action": [
+                "lambda:ListFunctions",
+                "lambda:ListEventSourceMappings",
+                "lambda:ListLayerVersions",
+                "lambda:ListLayers",
+                "lambda:GetAccountSettings",
+                "lambda:CreateEventSourceMapping"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Sid": "MainRoleLambdaLayer",
+            "Effect": "Allow",
+            "Action": "lambda:*",
+            "Resource": "arn:aws:lambda:us-east-2:343413928436:layer:*"
+        },
+        {
+            "Sid": "MainRoleLambdaFunction",
+            "Effect": "Allow",
+            "Action": "lambda:*",
+            "Resource": [
+                "arn:aws:lambda:us-east-2:343413928436:function:*",
+                "arn:aws:lambda:us-east-2:343413928436:event-source-mapping:*",
+                "arn:aws:lambda:us-east-2:343413928436:layer:*:*"
+            ]
+        }
+    ]
+}

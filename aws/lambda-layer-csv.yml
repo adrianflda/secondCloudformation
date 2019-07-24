@@ -1,0 +1,44 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Parameters:
+  Name:
+    Type: String
+    Description: Layer for lambda function.
+    Default: csvtojson-layer
+
+  S3Bucket:
+    Type: String
+    Description: Bucket name Layer for lambda function.
+    Default: cf-storage
+    
+  S3Key:
+    Type: String
+    Description: Key, layer name.
+    Default: csvtojson-layer
+
+Resources:
+  LayerVersion:
+    Type: "AWS::Lambda::LayerVersion"
+    Properties:
+      CompatibleRuntimes:
+        - nodejs8.10
+      Content:
+        S3Bucket: !Ref S3Bucket
+        S3Key: !Sub ${S3Key}.zip
+      Description: Simple Layer
+      LayerName: !Ref Name
+      LicenseInfo: MIT
+
+  LayerPermission:
+    Type: "AWS::Lambda::LayerVersionPermission"
+    DependsOn:
+    - LayerVersion
+    Properties:
+      Action: lambda:GetLayerVersion
+      LayerVersionArn: !Ref LayerVersion
+      Principal: !Ref AWS::AccountId
+
+Outputs:
+  Arn:
+    Description: Layer for lambda function
+    Value: !Ref LayerVersion
