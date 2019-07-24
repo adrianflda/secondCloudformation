@@ -1,4 +1,4 @@
-# secondCloudformation# Second AWS Cloudformation Project
+Second AWS Cloudformation Project
 
 ## Table of Contents
 + [About](#about)
