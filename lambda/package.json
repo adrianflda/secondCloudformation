@@ -1,0 +1,34 @@
+{
+  "name": "secondcloudformation",
+  "version": "1.0.0",
+  "description": "aws cloudformation guide",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/adrianflda/secondCloudformation.git"
+  },
+  "keywords": [
+    "aws",
+    "cloudformation",
+    "lambda",
+    "s3",
+    "csv",
+    "json"
+  ],
+  "author": "Adrian Moreno",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/adrianflda/secondCloudformation/issues"
+  },
+  "homepage": "https://github.com/adrianflda/secondCloudformation#readme",
+  "devDependencies": {
+    "lambda-tester": "^3.6.0"
+  },
+  "dependencies": {
+    "aws-sdk": "^2.498.0",
+    "csvtojson": "^2.0.10"
+  }
+}
